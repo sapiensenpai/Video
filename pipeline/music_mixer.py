@@ -7,7 +7,7 @@ Trims/loops to total video duration and reduces volume to -20 dB.
 import os
 import requests
 from pathlib import Path
-from pydub import AudioSegment
+from utils.audio_compat import AudioSegment
 
 from utils.config import TEMP_DIR, PIXABAY_API_KEY, MUSIC_VOLUME_DB
 

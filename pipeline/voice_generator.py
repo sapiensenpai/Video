@@ -6,7 +6,7 @@ Generates per-scene voiceover audio using the ElevenLabs REST API.
 import time
 import requests
 from pathlib import Path
-from pydub import AudioSegment
+from utils.audio_compat import AudioSegment
 
 from utils.config import ELEVENLABS_API_KEY, TEMP_AUDIO_DIR, AUDIO_SILENCE_PADDING_MS
 

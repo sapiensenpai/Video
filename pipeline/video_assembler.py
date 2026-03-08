@@ -8,7 +8,7 @@ import subprocess
 import shutil
 from datetime import datetime
 from pathlib import Path
-from pydub import AudioSegment
+from utils.audio_compat import AudioSegment
 
 from utils.config import (
     TEMP_DIR, OUTPUT_DIR,
