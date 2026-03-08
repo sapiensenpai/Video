@@ -6,6 +6,8 @@ Generates an ASS subtitle file for styled lower-third captions.
 from pathlib import Path
 from utils.config import TEMP_DIR, OUTPUT_WIDTH, OUTPUT_HEIGHT
 
+# TikTok-style: large white bold text, thick black outline, centre-screen
+# Alignment 5 = middle-centre; BorderStyle 1 = outline+shadow; Outline 5px
 ASS_HEADER = """\
 [Script Info]
 Title: MyMeds UK Ad
@@ -15,7 +17,7 @@ PlayResY: {play_res_y}
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default,Arial,52,&H00FFFFFF,&H000000FF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,3,0,2,60,60,80,1
+Style: Default,Arial,76,&H00FFFFFF,&H000000FF,&H00000000,&HB4000000,-1,0,0,0,100,100,1,0,1,5,0,5,80,80,0,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -31,8 +33,8 @@ def _seconds_to_ass(t: float) -> str:
     return f"{h}:{m:02d}:{s:02d}.{cs:02d}"
 
 
-def _chunk_text(text: str, words_per_chunk: int = 6) -> list[str]:
-    """Split narration into caption-sized chunks."""
+def _chunk_text(text: str, words_per_chunk: int = 3) -> list[str]:
+    """Split narration into short, punchy caption chunks."""
     words = text.split()
     chunks = []
     for i in range(0, len(words), words_per_chunk):
@@ -59,7 +61,7 @@ def generate_subtitles(script: dict, preview: bool = False) -> str:
         duration = scene.get("actual_duration_seconds", scene["duration_seconds"])
         narration = scene["narration"]
 
-        chunks = _chunk_text(narration, words_per_chunk=6)
+        chunks = _chunk_text(narration, words_per_chunk=3)
         if not chunks:
             current_time += duration
             continue
@@ -69,7 +71,6 @@ def generate_subtitles(script: dict, preview: bool = False) -> str:
         for chunk in chunks:
             start = current_time
             end = current_time + chunk_dur
-            # Escape braces and special ASS chars
             safe_chunk = chunk.replace("{", "\\{").replace("}", "\\}")
             line = (
                 f"Dialogue: 0,{_seconds_to_ass(start)},{_seconds_to_ass(end)},"

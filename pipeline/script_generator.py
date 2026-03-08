@@ -31,7 +31,7 @@ MYMEDS_AD_SCRIPT = {
                 "style": "bold_white_on_dark",
             },
             "background": "dark_gradient_purple",
-            "motion": "slow_zoom_in",
+            "motion": "dramatic_zoom_in",
             "notes": (
                 "No screenshot. Pure text on dark purple/black gradient. "
                 "This is the emotional hook."
@@ -53,7 +53,7 @@ MYMEDS_AD_SCRIPT = {
                 "style": "bold_white_outline",
             },
             "background": None,
-            "motion": "slow_zoom_out",
+            "motion": "cinematic_pan_left",
             "notes": "Show the 'Chat GPT for Health / Bye bye Dr. Google' social post.",
         },
         {
@@ -92,7 +92,7 @@ MYMEDS_AD_SCRIPT = {
                 "style": "bold_white_outline",
             },
             "background": None,
-            "motion": "pan_up_slow",
+            "motion": "zoom_in_pan_up",
             "notes": "Show the All Medications List screenshot.",
         },
         {
@@ -111,7 +111,7 @@ MYMEDS_AD_SCRIPT = {
                 "style": "bold_white_outline",
             },
             "background": None,
-            "motion": "slow_zoom_in",
+            "motion": "dramatic_zoom_in",
             "notes": "Show the Chat with Roger screenshot (Mounjaro/Ozempic conversation).",
         },
         {
@@ -131,7 +131,7 @@ MYMEDS_AD_SCRIPT = {
                 "style": "bold_white_outline",
             },
             "background": None,
-            "motion": "slow_zoom_in",
+            "motion": "cinematic_pan_right",
             "notes": "Show the Analyse Drugs screenshot (Warfarin + Tramadol).",
         },
         {
@@ -150,7 +150,7 @@ MYMEDS_AD_SCRIPT = {
                 "style": "bold_white_outline",
             },
             "background": None,
-            "motion": "pan_down_slow",
+            "motion": "cinematic_pan_left",
             "notes": "Show the Medication Calendar screenshot with Gabapentine.",
         },
         {
@@ -170,7 +170,7 @@ MYMEDS_AD_SCRIPT = {
                 "style": "bold_white_outline",
             },
             "background": None,
-            "motion": "slow_zoom_in",
+            "motion": "zoom_in_pan_up",
             "notes": "Show the NHS Prescription barcode screen.",
         },
         {
@@ -190,7 +190,7 @@ MYMEDS_AD_SCRIPT = {
                 "style": "bold_white_outline",
             },
             "background": None,
-            "motion": "slow_zoom_out",
+            "motion": "dramatic_zoom_out",
             "notes": "Show the privacy/document screenshot.",
         },
         {

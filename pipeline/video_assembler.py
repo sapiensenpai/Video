@@ -16,27 +16,60 @@ from utils.config import (
 )
 
 
+_FADE_DUR = 0.4  # crossfade duration in seconds between clips
+
+
 def _concat_video_clips(scenes: list[dict]) -> Path:
-    """Concatenate silent scene clips into one video file."""
-    concat_file = TEMP_DIR / "concat.txt"
-    lines = []
-    for scene in scenes:
-        clip = scene.get("clip_path", "")
-        if clip and Path(clip).exists():
-            lines.append(f"file '{clip}'")
-
-    concat_file.write_text("\n".join(lines))
-
-    out = TEMP_DIR / "video_no_audio.mp4"
-    cmd = [
-        "ffmpeg", "-y",
-        "-f", "concat",
-        "-safe", "0",
-        "-i", str(concat_file),
-        "-c", "copy",
-        str(out),
+    """Concatenate silent scene clips with crossfade transitions."""
+    clips = [
+        (scene["clip_path"], scene.get("actual_duration_seconds", scene["duration_seconds"]))
+        for scene in scenes
+        if scene.get("clip_path") and Path(scene["clip_path"]).exists()
     ]
-    _run(cmd, "concat video clips")
+    out = TEMP_DIR / "video_no_audio.mp4"
+
+    if len(clips) <= 1:
+        # Single clip — just re-mux without re-encoding
+        concat_file = TEMP_DIR / "concat.txt"
+        concat_file.write_text(f"file '{clips[0][0]}'" if clips else "")
+        cmd = ["ffmpeg", "-y", "-f", "concat", "-safe", "0",
+               "-i", str(concat_file), "-c", "copy", str(out)]
+        _run(cmd, "concat video clips")
+        return out
+
+    # Build xfade filter chain for smooth crossfades
+    inputs = []
+    for clip_path, _ in clips:
+        inputs += ["-i", clip_path]
+
+    filter_parts = []
+    current = "0:v"
+    offset = 0.0
+    n = len(clips)
+
+    for i in range(1, n):
+        offset += clips[i - 1][1] - _FADE_DUR
+        label = f"v{i}" if i < n - 1 else "vout"
+        filter_parts.append(
+            f"[{current}][{i}:v]xfade=transition=fade"
+            f":duration={_FADE_DUR}:offset={offset:.4f}[{label}]"
+        )
+        current = label
+
+    cmd = (
+        ["ffmpeg", "-y"]
+        + inputs
+        + [
+            "-filter_complex", ";".join(filter_parts),
+            "-map", "[vout]",
+            "-c:v", "libx264",
+            "-preset", "fast",
+            "-crf", "18",
+            "-pix_fmt", "yuv420p",
+            str(out),
+        ]
+    )
+    _run(cmd, "concat video clips with crossfades")
     return out
 
 
