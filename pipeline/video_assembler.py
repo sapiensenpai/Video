@@ -159,7 +159,26 @@ def assemble_video(
             str(final_path),
         ]
 
-    _run(cmd, "final encode")
+    try:
+        _run(cmd, "final encode")
+    except RuntimeError:
+        if not no_subs and subs_file.exists():
+            print("\n    Warning: subtitle filter unavailable (FFmpeg missing libass) — retrying without subtitles...")
+            cmd_no_subs = [
+                "ffmpeg", "-y",
+                "-i", str(video_no_audio),
+                "-i", str(audio_mixed),
+                "-c:v", "libx264",
+                "-preset", "medium" if not preview else "ultrafast",
+                "-crf", "18" if not preview else "28",
+                "-c:a", "aac",
+                "-b:a", "192k",
+                "-shortest",
+                str(final_path),
+            ]
+            _run(cmd_no_subs, "final encode (no subs)")
+        else:
+            raise
     print("done")
 
     return str(final_path)
