@@ -131,7 +131,7 @@ def assemble_video(
     if not no_subs and subs_file.exists():
         # Escape path for FFmpeg filter (handle colons on Windows paths)
         subs_str = str(subs_file).replace("\\", "/").replace(":", "\\:")
-        vf = f"ass={subs_str}"
+        vf = f"ass=filename='{subs_str}'"
         cmd = [
             "ffmpeg", "-y",
             "-i", str(video_no_audio),
