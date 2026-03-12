@@ -62,14 +62,26 @@ def main():
         action="store_true",
         help="Skip subtitle generation.",
     )
+    parser.add_argument(
+        "--ai-video",
+        action="store_true",
+        help=(
+            "Use AI-generated visuals via Replicate (FLUX + minimax/video-01). "
+            "Requires REPLICATE_API_TOKEN. Each scene's last frame seeds the next "
+            "scene for seamless visual flow."
+        ),
+    )
     args = parser.parse_args()
 
     preview = args.preview
     no_music = args.no_music
     no_subs = args.no_subs
+    ai_video = args.ai_video
 
     if preview:
         print("\n** PREVIEW MODE — generating 540x960 low-res version **\n")
+    if ai_video:
+        print("\n** AI VIDEO MODE — using FLUX + minimax/video-01 via Replicate **\n")
 
     start_time = time.time()
 
@@ -110,18 +122,27 @@ def main():
         print(f"  ✓ Voiceover complete. Total audio duration: {total_actual:.1f}s")
 
         # ------------------------------------------------------------------- #
-        # Step 3 — Process screenshots                                         #
+        # Step 3 — Generate visuals (AI or screenshot-based)                   #
         # ------------------------------------------------------------------- #
-        print("[3/7] Processing screenshots...")
-        script = process_all_images(script, preview=preview)
-        print("  ✓ All frames processed.")
+        if ai_video:
+            print("[3/7] Generating AI visuals (FLUX + minimax via Replicate)...")
+            from pipeline.ai_visual_engine import generate_ai_video_scenes
+            script = generate_ai_video_scenes(script, preview=preview)
+            print("  ✓ AI visuals complete.")
+        else:
+            print("[3/7] Processing screenshots...")
+            script = process_all_images(script, preview=preview)
+            print("  ✓ All frames processed.")
 
         # ------------------------------------------------------------------- #
-        # Step 4 — Apply Ken Burns motion                                      #
+        # Step 4 — Motion (Ken Burns for standard mode; AI handles its own)    #
         # ------------------------------------------------------------------- #
-        print("[4/7] Applying Ken Burns motion effects...")
-        script = apply_motion_to_all(script, preview=preview)
-        print("  ✓ Motion effects applied.")
+        if ai_video:
+            print("[4/7] Motion baked into AI clips — skipping Ken Burns.")
+        else:
+            print("[4/7] Applying Ken Burns motion effects...")
+            script = apply_motion_to_all(script, preview=preview)
+            print("  ✓ Motion effects applied.")
 
         # ------------------------------------------------------------------- #
         # Step 5 — Generate subtitles                                          #
